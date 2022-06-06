@@ -1,0 +1,23 @@
+{
+  "name": "seubarria_interface_tests_cypress",
+  "version": "1.0.0",
+  "description": "Automação dos testes de interface site barrigareact.wcaquino.me utilizando Cypress, Node.js e JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DinoSaulo/seubarria_interface_tests_cypress.git"
+  },
+  "author": "DinoSaulo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DinoSaulo/seubarria_interface_tests_cypress/issues"
+  },
+  "homepage": "https://github.com/DinoSaulo/seubarria_interface_tests_cypress#readme",
+  "dependencies": {
+    "cypress": "^10.0.2",
+    "cypress-xpath": "^1.6.2"
+  }
+}
