@@ -145,7 +145,7 @@ describe('Should test at an interface level', () => {
         cy.xpath(loc.EXTRATO.FN_XP_BUSCA_ELEMENTO('Desc', '123')).should('exist')
     })
 
-    it.only('Should get ballance', () => {
+    it('Should get ballance', () => {
 
         cy.route({
             method: 'GET',
@@ -222,5 +222,136 @@ describe('Should test at an interface level', () => {
         cy.get(loc.MENU.HOME).click()
 
         cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Carteira')).should('contain', '4.034,00')
+    })
+
+    it('Should remove a transaction', () => {
+        cy.route({
+            method: 'DELETE',
+            url: '/transacoes/**',
+            status: 204,
+            response: {},
+        }).as('del')
+
+        cy.get(loc.MENU.EXTRATO).click()
+
+        cy.xpath(loc.EXTRATO.FN_XP_REMOVER_ELEMENTO('Movimentacao para exclusao')).click()
+        cy.get(loc.TOAST.MESSAGE).should('contain', 'sucesso')
+    })
+
+    it('Should requequest is made correctly', () => {
+        const reqStub = cy.stub()
+        cy.route({
+            method: 'POST',
+            url: '/contas',
+            response: {id:3, nome: 'Conta de teste', visivel: true, usuario_id: 1},
+            /*onRequest: req => {
+                console.log(req)
+                expect(req.request.body.nome).to.be.empty
+                expect(req.request.headers).to.have.property('Authorization')
+            }*/
+            onRequest: reqStub
+        }).as('saveConta')
+
+        cy.get(loc.MENU.SETTINGS).click()
+        cy.get(loc.MENU.CONTAS).click()
+
+        cy.closeAllToasts()
+
+        cy.route({
+            method: 'GET',
+            url: '/contas',
+            response: [
+                { "id": 1, "nome": "Carteira", "visivel": true, "usuario_id": 1 },
+                { "id": 2, "nome": "Banco", "visivel": true, "usuario_id": 1 },
+                { id: 3, nome: 'Conta de teste', visivel: true, usuario_id: 1}
+            ]
+        }).as('contasSave')
+
+        cy.inserirConta('{CONTROL}')
+        cy.wait('@saveConta').then(() => {
+            console.log(reqStub.args[0][0])
+            expect(reqStub.args[0][0].request.body.nome).to.be.empty
+            expect(reqStub.args[0][0].request.headers).to.have.property('Authorization')
+        })
+        cy.get(loc.TOAST.MESSAGE).should('contain', 'Conta inserida com sucesso!')
+    })
+
+    it.only('Should test colors', () => {
+        cy.route({
+            method: 'GET',
+            url: '/extrato/**',
+            response: [
+                {
+                    "conta": "Conta para movimentacoes",
+                    "id": 1143427,
+                    "descricao": "Receita paga",
+                    "envolvido": "AAA",
+                    "observacao": null,
+                    "tipo": "REC",
+                    "data_transacao": "2022-06-06T03:00:00.000Z",
+                    "data_pagamento": "2022-06-06T03:00:00.000Z",
+                    "valor": "123.00",
+                    "status": true,
+                    "conta_id": 1226452,
+                    "usuario_id": 1,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                },
+                {
+                    "conta": "Conta para movimentacoes",
+                    "id": 1143300,
+                    "descricao": "Receita pendente",
+                    "envolvido": "BBB",
+                    "observacao": null,
+                    "tipo": "REC",
+                    "data_transacao": "2022-06-06T03:00:00.000Z",
+                    "data_pagamento": "2022-06-06T03:00:00.000Z",
+                    "valor": "-1500.00",
+                    "status": false,
+                    "conta_id": 1226453,
+                    "usuario_id": 1,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                },
+                {
+                    "conta": "Conta para saldo",
+                    "id": 1143301,
+                    "descricao": "Despesa paga",
+                    "envolvido": "CCC",
+                    "observacao": null,
+                    "tipo": "DESP",
+                    "data_transacao": "2022-06-06T03:00:00.000Z",
+                    "data_pagamento": "2022-06-06T03:00:00.000Z",
+                    "valor": "-1500.00",
+                    "status": true,
+                    "conta_id": 1226454,
+                    "usuario_id": 1,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                },
+                {
+                    "conta": "Conta para saldo",
+                    "id": 1143303,
+                    "descricao": "Despesa pendente",
+                    "envolvido": "DDD",
+                    "observacao": null,
+                    "tipo": "DESP",
+                    "data_transacao": "2022-06-06T03:00:00.000Z",
+                    "data_pagamento": "2022-06-06T03:00:00.000Z",
+                    "valor": "-1000.00",
+                    "status": false,
+                    "conta_id": 1226455,
+                    "usuario_id": 1,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                }
+            ]
+        })
+
+        cy.get(loc.MENU.EXTRATO).click()
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA("Receita paga")).should('have.class', 'receitaPaga')
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA("Receita pendente")).should('have.class', 'receitaPendente')
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA("Despesa paga")).should('have.class', 'despesaPaga')
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA("Despesa pendente")).should('have.class', 'despesaPendente')
     })
 })

@@ -45,6 +45,7 @@ const locators = {
         FN_XP_REMOVER_ELEMENTO: (nome_conta) => `//span[contains(.,'${nome_conta}')]/../../..//i[@class='far fa-trash-alt']`,
         FN_XP_ALTERAR_ELEMENTO: (nome_conta) => `//span[contains(.,'${nome_conta}')]/../../..//i[@class='fas fa-edit']`,
         FN_XP_LI_ELEMENTO: (nome_conta) => `//li[contains(.,'${nome_conta}')]`,
+        FN_XP_LINHA: (nome_conta) => `//span[contains(.,'${nome_conta}')]/../../../..`,
         FN_XP_SALDO_CONTA: (nome_conta) => `//span[contains(.,'${nome_conta}')]/../small`,
         XP_BTNS_DELETE_TRANSACTIONS: "//li//i[@class='far fa-trash-alt']",
         XP_TRANSACTIONS_LIST: "//div[@class='list-group']/li"
