@@ -276,7 +276,7 @@ describe('Should test at an interface level', () => {
         cy.get(loc.TOAST.MESSAGE).should('contain', 'Conta inserida com sucesso!')
     })
 
-    it.only('Should test colors', () => {
+    it('Should test colors', () => {
         cy.route({
             method: 'GET',
             url: '/extrato/**',
@@ -353,5 +353,16 @@ describe('Should test at an interface level', () => {
         cy.xpath(loc.EXTRATO.FN_XP_LINHA("Receita pendente")).should('have.class', 'receitaPendente')
         cy.xpath(loc.EXTRATO.FN_XP_LINHA("Despesa paga")).should('have.class', 'despesaPaga')
         cy.xpath(loc.EXTRATO.FN_XP_LINHA("Despesa pendente")).should('have.class', 'despesaPendente')
+    })
+
+    it('Should test the responsiveness', () => {
+        cy.get(loc.MENU.HOME).should('exist').and('be.visible')
+        cy.viewport(500, 700)
+        cy.get(loc.MENU.HOME).should('exist').and('be.not.visible')
+        cy.viewport('iphone-5')
+        cy.get(loc.MENU.HOME).should('exist').and('be.not.visible')
+        cy.viewport('ipad-2')
+        cy.get(loc.MENU.HOME).should('exist').and('be.visible')
+        cy.viewport(1000, 600)
     })
 })
